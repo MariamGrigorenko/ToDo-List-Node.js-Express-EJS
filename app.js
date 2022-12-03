@@ -6,6 +6,9 @@ const app = express();
 const bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// * Export JS files *
+const date = require(__dirname + "/date.js");
+
 //  * Consts *
 const port = process.env.PORT || 4000;
 
@@ -20,28 +23,20 @@ app.set("view engine", "ejs");
 // * Static Folder *
 app.use(express.static(__dirname + "/public"));
 
-// *
+// * Setting the current date and the main route
 app.get("/", (req, res) => {
-  const day = new Date();
-  let options = {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  };
-  let currentDate = day.toLocaleDateString("en-US", options);
-
+  let currentDate = date.getDate();
   res.render("list", { listTitle: currentDate, newTasks: tasks, route: "/" });
 });
 
-// *
+// * Getting and pushing the added tasks from the body of the main route
 app.post("/", (req, res) => {
   let addedTask = req.body.newTask;
   tasks.push(addedTask);
   res.redirect("/");
 });
 
-//*
+//* Setting the work route
 app.get("/work", (req, res) => {
   res.render("list", {
     listTitle: "Work List",
@@ -50,11 +45,16 @@ app.get("/work", (req, res) => {
   });
 });
 
-// *
+// * Getting and pushing the added tasks from the body of the work route
 app.post("/work", (req, res) => {
   addedTask = req.body.newTask;
   workTasks.push(addedTask);
   res.redirect("/work");
+});
+
+// * Setting the about route
+app.get("/about", (req, res) => {
+  res.render("about");
 });
 
 // * Porting our server *
